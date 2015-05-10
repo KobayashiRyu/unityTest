@@ -2,6 +2,8 @@
 
 USING_NS_CC;
 
+
+
 Scene* HelloWorld::createScene()
 {
     // 'scene' is an autorelease object
@@ -12,7 +14,7 @@ Scene* HelloWorld::createScene()
 
     // add layer as a child to scene
     scene->addChild(layer);
-
+    
     // return the scene
     return scene;
 }
@@ -47,6 +49,45 @@ bool HelloWorld::init()
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
+    
+    
+    // touch設定
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->setSwallowTouches(true);
+    
+    listener->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan, this);
+    listener->onTouchMoved = CC_CALLBACK_2(HelloWorld::onTouchMoved, this);
+    listener->onTouchEnded = CC_CALLBACK_2(HelloWorld::onTouchEnded, this);
+
+    
+    
+
+    /*
+    listener->onTouchBegan = [](Touch* touch, Event* event) {
+        auto target = static_cast<Sprite*>(event->getCurrentTarget());
+        
+        Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+        Size s = target->getContentSize();
+        
+        Rect rect = Rect(0, 0, s.width, s.height);
+        
+        if (rect.containsPoint(locationInNode))
+        {
+            return true;
+        }
+        return false;
+    };
+    
+    listener->onTouchEnded = [=](Touch* touch, Event* event) {
+        //auto target = static_cast<Sprite*>(event->getCurrentTarget());
+        
+    };
+     */
+    
+    auto dip = Director::getInstance()->getEventDispatcher();
+    dip->addEventListenerWithSceneGraphPriority(listener, this);
+
+    
 
     /////////////////////////////
     // 3. add your codes below...
@@ -64,15 +105,36 @@ bool HelloWorld::init()
     this->addChild(label, 1);
 
     // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
+    auto *sp = Sprite::create("HelloWorld.png");
 
     // position the sprite on the center of the screen
-    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    sp->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    
+    sp->runAction(MoveTo::create(0.5f, Point(400, 100)));
 
     // add the sprite as a child to this layer
-    this->addChild(sprite, 0);
+    this->addChild(sp, 0);
     
     return true;
+}
+
+bool HelloWorld::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
+{
+    log("onTouchBegin");
+    
+    return true;
+}
+
+void HelloWorld::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
+{
+    log("onTouchMoved");
+    
+    auto location = touch->getLocation();
+}
+
+void HelloWorld::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
+{
+    log("onTouchEnded");
 }
 
 
